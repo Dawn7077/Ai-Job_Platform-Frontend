@@ -41,14 +41,29 @@ export const AuthProvider:React.FC<{children:React.ReactNode}> = ({children})=>{
         }
         throw new Error(data.error||'login error')
     }
-
-    const signup = async (userData:{email:string;password:string;role:string;})=>{
-        const data = await authApi.signup(userData)
+    const googleLogin = async(googleData:{token:string;role:'CANDIDATE' | 'COMPANY' | 'ADMIN'})=>{
+        const data = await authApi.googleLogin(googleData)
         if(data.success){
             setUser(data.user)
             return data.user
         }
+    }
+
+    const signupOTP = async (userData:{email:string;password:string;role:string;})=>{
+        const data = await authApi.signupOTP(userData)
+        if(data.success){
+            // setUser(data.user)
+            return data 
+        }
         throw new Error(data.error||'singup error')
+    }
+    const verifySignUp = async (data:{email:string,otp:string})=>{
+        const res = await authApi.verifySignUp(data)
+        if(res.success){
+            setUser(res.user)
+            return res.user
+        }
+        throw new Error(res.error||'Verification Error')
     }
 
     const logout =async()=>{
@@ -66,7 +81,7 @@ export const AuthProvider:React.FC<{children:React.ReactNode}> = ({children})=>{
 
 
     return(
-    <AuthContext.Provider value ={{user,loading,login,signup,logout}} >
+    <AuthContext.Provider value ={{user,loading,login,signupOTP,verifySignUp,logout,googleLogin}} >
         {children}
     </AuthContext.Provider>)
 }

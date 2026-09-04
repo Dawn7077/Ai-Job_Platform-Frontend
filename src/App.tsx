@@ -7,6 +7,7 @@ import CompanyDash from './pages/Company/CompanyDashBoard'
 import AdminDash from './pages/Admin/AdminDashBoard' 
 import { ProtectedRoute } from './features/auth/component/ProtectedRoute'
 import { PublicRoute } from './features/auth/component/PublicRoute'
+import { ForgotPassword } from './pages/auth/ForgotPassword'
 
 function App() { 
 
@@ -19,6 +20,7 @@ function App() {
       <Route element={<PublicRoute/>}>
         <Route path='/signup' element={<SignUp/>}/>
         <Route path='/login' element={<Login/>}/>
+        <Route path='/forgot-password' element={<ForgotPassword/>}/>
       </Route>
 
       {/* Candidate routes */}

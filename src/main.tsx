@@ -4,13 +4,20 @@ import './index.css'
 import App from './App.tsx'
 import { BrowserRouter } from 'react-router-dom' 
 import { AuthProvider } from './Context/AuthContextProvider.tsx'
-
+import { GoogleOAuthProvider } from '@react-oauth/google'
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
+if (!GOOGLE_CLIENT_ID) {
+  console.error("Missing VITE_GOOGLE_CLIENT_ID in .env file");
+}
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </BrowserRouter>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <BrowserRouter>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </BrowserRouter>
+    </GoogleOAuthProvider>
   </StrictMode>,
 )
+

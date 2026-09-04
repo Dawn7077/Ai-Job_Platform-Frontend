@@ -2,7 +2,8 @@ import { useState } from "react"
 import { useAuth } from "../../hooks/useAuth"
 import { useNavigate,Link} from "react-router-dom"
 import { User,Building,ShieldCheck ,Eye,EyeOff} from "lucide-react"
-
+import { getErrorMessage } from "../../utils/ErrorMessage"
+import { useGoogleLogin,TokenResponse } from "@react-oauth/google"
 type userRole = 'CANDIDATE'|'COMPANY'|'ADMIN'
 
 export default function Login(){
@@ -13,7 +14,7 @@ export default function Login(){
   const [error,setError] = useState('')
   const [loading,setLoading] = useState(false)
 
-  const {login} = useAuth()
+  const {login,googleLogin} = useAuth()
   const navigate = useNavigate()
 
    const validationForm =()=>{
@@ -43,8 +44,11 @@ export default function Login(){
 
     try {
       const user = await login({email,password})
-      if(role && role !== user.role)setError(`This account is registered as ${user.role}, not ${role}.`)
-      
+      if(role && role !== user.role){
+        setError(`This account is registered as ${user.role}, not ${role}.`)
+        setLoading(false)
+        return
+      }
       switch (user.role){
         case 'CANDIDATE':
           navigate('/candidate/home')
@@ -58,22 +62,60 @@ export default function Login(){
       }
    
       } catch (error) {
-      const err = error instanceof Error?error.message:'Error in logging in to your account!! try again'
-      setError(err)
+      
+      setError(getErrorMessage(error))
     }finally{
       setLoading(false)
     }
   }
 
+  const handleGoogleSuccess = async (tokenResponse:TokenResponse)=>{
+    setError('')
+    setLoading(true)
+    try {
+      const user = await googleLogin({token:tokenResponse.access_token,role})
+
+      if(!role && role!==user.role){
+        setError(`This account is registered as ${user.role}, not ${role}.`)
+        setLoading(false)
+        return
+      }
+
+      switch (user.role){
+        case 'CANDIDATE':
+          navigate('/candidate/home')
+          break;
+        case 'COMPANY':
+          navigate('/company/home')
+          break;
+        case 'ADMIN':
+          navigate('/admin/home')
+          break;
+      }
+
+    } catch (error) {
+      setError(getErrorMessage(error))
+    }finally{
+      setLoading(false)
+    }
+  }
+
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess:handleGoogleSuccess,
+    onError:()=>setError('Google Sign-In error.Please try again')
+  })
+
+  
+
   return(<>
     <div className="min-h-screen bg-[#070913] flex items-center justify-center p-4 text-white">
       <div className="w-full max-w-110 flex flex-col items-center">
-        {/* header */}
+{/* header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold tracking-tight">Welcome Back</h1>
           <p className="text-sm text-slate-400 mt-2">Choose your Role/workspace and continue.</p>
         </div>
-        {/* role selector */}
+{/* role selector */}
         <div className="flex items-center justify-between bg-[#111625] border border-slate-800/80 p-1.5 rounded-2xl w-full mb-6">
           <button
             type="button"
@@ -115,7 +157,7 @@ export default function Login(){
             </button>
 
         </div>
-        {/* error */}
+{/* error */}
         {error && (<>
           <div className="w-full mb-4 p-3 bg-red-950/40 border border-red-800 text-red-300 text-xs rounded-xl text-center">
             {error}
@@ -135,7 +177,13 @@ export default function Login(){
           </div>
 
           <div className="flex flex-col gap-1.5 w-full text-left">
-            <label className="text-slate-300 font-medium text-xs">Password</label>
+            <div className="flex justify-between items-center">
+              <label className="text-slate-300 font-medium text-xs">Password</label>
+              <Link to='/forgot-password' className="text-xs text-indigo-400 hover:underline">
+                Forgot Password?
+              </Link>
+            </div>
+            
             <div className="relative w-full">
               <input
                 type={showPassword ? "text" : "password"}
@@ -164,6 +212,8 @@ export default function Login(){
             {loading?'Signing In ...':'Continue to workspace'}
           </button>
 
+          
+
 {/* google sign in */}
           <div className="relative flex items-center justify-center my-1">
             <div className="border-t border-slate-800/80 w-full" />
@@ -172,6 +222,8 @@ export default function Login(){
 
           <button
             type="button"
+            onClick={()=>handleGoogleLogin()}
+            disabled={loading}
             className="w-full py-3 px-4 rounded-xl font-medium text-sm text-slate-200 bg-[#161C2E] border border-slate-800/60 hover:bg-[#1E2638] flex items-center justify-center gap-3 transition-all"
           >
             <span>Continue with Google</span>
@@ -183,7 +235,7 @@ export default function Login(){
             </svg>
           </button>
 
-
+{/* sign up */}
           <div className="text-center text-xs text-slate-400 mt-2">
             <span>New to CareerAi ?</span>
             <Link to='/signup' className="text-indigo-400 font-medium hover:underline ml-1">
