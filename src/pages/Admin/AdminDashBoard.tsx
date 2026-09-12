@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../../hooks/useAuth"
+// import { useState } from "react"
+// import { PendingCompanies } from "../../services/adminApi"
 
 export default function AdminDash(){
     const navigate = useNavigate()

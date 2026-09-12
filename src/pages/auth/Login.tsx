@@ -12,6 +12,9 @@ export default function Login(){
   const [password,setPassword] = useState('')
   const [showPassword,setShowPassword] = useState(false)
   const [error,setError] = useState('')
+
+  // const [succesMsg,setSuccesMsg] = useState('')
+  
   const [loading,setLoading] = useState(false)
 
   const {login,googleLogin} = useAuth()
@@ -44,6 +47,15 @@ export default function Login(){
 
     try {
       const user = await login({email,password})
+
+      // company verification
+      // if("message" in user && user.message){
+      //   const msg = user?.message ||''
+      //   setSuccesMsg(msg)
+      //   setLoading(false)
+      //   return
+      // }
+
       if(role && role !== user.role){
         setError(`This account is registered as ${user.role}, not ${role}.`)
         setLoading(false)
@@ -75,7 +87,7 @@ export default function Login(){
     try {
       const user = await googleLogin({token:tokenResponse.access_token,role})
 
-      if(!role && role!==user.role){
+      if(role && role!==user.role){
         setError(`This account is registered as ${user.role}, not ${role}.`)
         setLoading(false)
         return
@@ -163,6 +175,13 @@ export default function Login(){
             {error}
           </div>
         </>)}
+{/* Message */}
+        {/* {succesMsg && (<>
+          <div className="w-full mb-4 p-3 bg-amber-950/40 border border-amber-800 text-amber-300 text-xs rounded-xl text-center">
+            {succesMsg}
+          </div>
+        </>)} */}
+
         
         <form onSubmit={handleSubmit} className="flex flex-col gap-5 w-full">
           <div className="flex flex-col gap-2 text-left">

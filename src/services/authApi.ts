@@ -28,7 +28,7 @@ export const authApi = {
         return response.data
     },
     resetPassword: async(data:{email:string,otp:string,newPassword:string})=>{
-        const response = await api.post('/user//reset-password',data)
+        const response = await api.post('/user/reset-password',data)
         return response.data
     },
     googleLogin:async(data:{token:string;role:'CANDIDATE'|'COMPANY'|'ADMIN'})=>{

@@ -20,6 +20,7 @@ export default function SignUp(){
     const [isOtpSent,setIsOtpSent] =useState(false)
     const [timer,setTimer] = useState(60)
     const [resendLoading,setResendLoading] = useState(false)
+    // const [succesMsg,setSuccesMsg] = useState('')
 
     const{signupOTP,verifySignUp} = useAuth()
     const navigate = useNavigate()
@@ -93,10 +94,23 @@ export default function SignUp(){
         try {
              
 
-            const user =  await verifySignUp({email,otp})
-
-
-
+            const res  =  await verifySignUp({email,otp})
+            
+            if(res.requiresApproval || role === 'COMPANY'){
+                alert(res.message || "Registration successful! Your account is pending admin verification.")
+                navigate('/login')
+                return
+            }
+            
+            
+            // if(role ==='COMPANY'){
+                //     alert('Registration successful! Your account is pending admin verification.')
+                //     navigate('/login')
+                //     return
+                // }
+                
+            const user =  res.user
+                
             switch(user.role){
                 case 'CANDIDATE':
                     navigate('/candidate/home');
