@@ -8,6 +8,7 @@ export const PublicRoute =()=>{
     if(user){
         switch (user.role){
             case "CANDIDATE":
+                if(!user.isOnboarding)return <Navigate to='/candidate/onboarding' replace/>
                 return <Navigate to='/candidate/home' replace/>
             case "COMPANY":
                 return <Navigate to='/company/home' replace/>

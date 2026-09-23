@@ -7,6 +7,7 @@ interface User{
     email:string
     role:'CANDIDATE'|'COMPANY'|'ADMIN'
     status:string
+    isOnboarding?:boolean
 }
 
 
@@ -19,7 +20,10 @@ export const AuthProvider:React.FC<{children:React.ReactNode}> = ({children})=>{
             try {
                 const data = await authApi.getMe()
                 if(data.success){
-                    setUser(data.user)
+                    setUser({
+                        ...data.user,
+                        isOnboarding:data.isOnboarding ?? data.user?.isOnboarding
+                    })
                 }
             } catch (error) {
                 console.log(error)
@@ -34,18 +38,27 @@ export const AuthProvider:React.FC<{children:React.ReactNode}> = ({children})=>{
  
     const login = async (credential:{email:string;password:string;})=>{
         const data = await authApi.login(credential)
+        
         if(data.success){
-            setUser(data.user)
-            console.log(data.accessToken)
-            return data.user
+            const updatedUser = {
+                ...data.user,
+                isOnboarding:data.isOnboarding
+            }
+            setUser(updatedUser)
+            console.log('isOnboarding:',updatedUser)
+            return {user:data.user,isOnboarding:data.isOnboarding}
         }
         throw new Error(data.message ||data.error||'login error')
     }
     const googleLogin = async(googleData:{token:string;role:'CANDIDATE' | 'COMPANY' | 'ADMIN'})=>{
         const data = await authApi.googleLogin(googleData)
         if(data.success){
-            setUser(data.user)
-            return data.user
+            const updatedUser = {
+                ...data.user,
+                isOnboarding:data.isOnboarding
+            }
+            setUser(updatedUser)
+            return updatedUser
         }
         throw new Error(data.message ||data.error||'Google login error')
     }

@@ -46,7 +46,7 @@ export default function Login(){
 
 
     try {
-      const user = await login({email,password})
+      const {user,isOnboarding} = await login({email,password})
 
       // company verification
       // if("message" in user && user.message){
@@ -55,6 +55,8 @@ export default function Login(){
       //   setLoading(false)
       //   return
       // }
+      
+            console.log('isOnboarding=>',isOnboarding,'\nuser',user.email)
 
       if(role && role !== user.role){
         setError(`This account is registered as ${user.role}, not ${role}.`)
@@ -63,7 +65,11 @@ export default function Login(){
       }
       switch (user.role){
         case 'CANDIDATE':
-          navigate('/candidate/home')
+          if(!isOnboarding){
+            navigate('/candidate/onboarding')
+          }else{
+            navigate('/candidate/home')
+          }
           break;
         case 'COMPANY':
           navigate('/company/home')
@@ -72,6 +78,7 @@ export default function Login(){
           navigate('/admin/home')
           break;
       }
+
    
       } catch (error) {
       

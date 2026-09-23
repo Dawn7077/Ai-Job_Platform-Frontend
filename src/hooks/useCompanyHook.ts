@@ -6,6 +6,7 @@ export function useCompany(){
     const [loading,setLoading] =useState(false)
     const [error,setError] =useState<string|null>(null)
     const [jobs,setJobs] = useState<JobItem[]>([])
+    const [totalJobs,setTotalJobs] = useState(0)
 
     const createJob = async(payload:CreateJobPayload)=>{
         setLoading(true)
@@ -27,7 +28,10 @@ export function useCompany(){
         setError(null)
         try {
             const response = await companyApi.getCompanyJobs()
-            if(response.success)setJobs(response.data)
+            if(response.success){
+                setJobs(response.data)
+                setTotalJobs(response.totalJobs)
+            }
             return response 
         } catch (error) {
             setError(getErrorMessage(error))
@@ -43,6 +47,6 @@ export function useCompany(){
     return {
         loading,error,
         createJob,fetchJobs,
-        jobs
+        jobs,totalJobs
     }
 }

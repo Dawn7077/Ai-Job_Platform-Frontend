@@ -1,11 +1,12 @@
 import { Outlet } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
-import {TopHeader} from './Header'
+import {TopHeader} from './Header' 
 
 export const CandidateLayout =()=>{
+    
     return(
         <div className="flex h-screen bg-[#090D16] text-white overflow-hidden">
-            <Sidebar/>
+            <Sidebar />
             <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
                 <TopHeader/>
 

@@ -5,18 +5,19 @@ interface ApiResponse{
     message:true
 }
 
-interface User{
+export interface User{
     id:string
     name?:string
     email:string
     role:'CANDIDATE'|'COMPANY'|'ADMIN'
     status:string
+    isOnboarding?:boolean
 }
 
 interface AuthContextType{
     user:User|null
     loading:boolean
-    login:(credential:{email:string;password:string;})=>Promise<User>
+    login:(credential:{email:string;password:string;})=>Promise<{user:User;isOnboarding:boolean}>
     signupOTP:(userData:{name:string;email:string;password:string;role:string;})=>Promise<User>
     
     verifySignUp:(data:{email:string,otp:string})=>Promise<{success:boolean;requiresApproval?:boolean;message?:string;user:User}>

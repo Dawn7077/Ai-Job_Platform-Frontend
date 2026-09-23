@@ -27,7 +27,7 @@ export const companyApi ={
         const response = await api.post('/company/jobs',payload)
         return response.data
     },
-    getCompanyJobs:async():Promise<{success:boolean,data:JobItem[]}>=>{
+    getCompanyJobs:async():Promise<{success:boolean,data:JobItem[],totalJobs:number}>=>{
     // 
         const response = await api.get('/company/jobs')
         return response.data

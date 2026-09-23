@@ -1,5 +1,5 @@
-// import { useNavigate,Link } from "react-router-dom"
-// import { useAuth } from "../../hooks/useAuth"  
+import { useNavigate,Link } from "react-router-dom"
+import { useAuth } from "../../hooks/useAuth"  
 
 
 
@@ -7,13 +7,16 @@
 // src/pages/CompanyJobsPage.tsx
 import React, { useState, useEffect } from "react";
 import { Plus, Briefcase, ListFilter } from "lucide-react";
-import { useCompany } from "../../hooks/useCompanyHook";
+import { useCompany } from "../../hooks/useCompanyHook"; 
 
 type ViewMode = "LIST" | "CREATE";
 
 export const CompanyDash: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("LIST");
-  const { jobs, fetchJobs, createJob, loading, error } = useCompany();
+  const { jobs,totalJobs, fetchJobs, createJob, loading, error } = useCompany();
+  const {logout} = useAuth()
+  const navigate = useNavigate()
+
 
   // Initial form state
   const [formData, setFormData] = useState({
@@ -59,6 +62,12 @@ export const CompanyDash: React.FC = () => {
       setViewMode("LIST");
     }
   };
+
+
+  const handlelogout =async()=>{
+        await logout()
+        navigate('/login')
+    }
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
@@ -118,6 +127,12 @@ export const CompanyDash: React.FC = () => {
               {error}
             </div>
           )}
+          {totalJobs &&
+        <div className="mb-4 p-3 text-xs bg-blue-50 text-blue-600 rounded-lg border border-blue-200">
+                total jobs listed by our company: {totalJobs}
+              </div>
+
+          }
 
           {loading ? (
             <div className="text-center py-16 text-xs text-slate-400">Loading postings...</div>
@@ -294,6 +309,17 @@ export const CompanyDash: React.FC = () => {
           </form>
         </div>
       )}
+
+
+      <div className="flex gap-2 px-6 pb-6 justify-center">
+          <Link to='/candidate/home'
+             className="px-4 py-2 bg-indigo-200 hover:bg-indigo-300 rounded-lg font-medium transition-colors text-xs"
+           >home
+        </Link>
+        <button onClick={handlelogout}
+            className="px-4 py-2 bg-pink-200 hover:bg-pink-400 rounded-lg font-medium transition-colors text-xs"
+        >logout</button>
+    </div>
     </div>
   );
 };
