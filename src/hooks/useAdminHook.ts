@@ -22,11 +22,11 @@ export const useAdmin = ()=>{
         }
     }
 
-    const verifyCompany = async(userId:string, status:'ACTIVE'|'SUSPENDED')=>{
+    const verifyCompany = async(userId:string, status:'ACTIVE'|'SUSPENDED',reason?:string)=>{
         setLoading(true)
         setError(null)
         try {
-            const data = await adminApi.verifyCompany({userId,status})
+            const data = await adminApi.verifyCompany({userId,status,reason})
             return data
         } catch (error) {
             setError(getErrorMessage(error))

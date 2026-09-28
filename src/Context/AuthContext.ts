@@ -26,6 +26,7 @@ interface AuthContextType{
     resetPassword:(data:{email:string,otp:string,newPassword:string})=>Promise<ApiResponse>
 
     logout:()=>Promise<void>
+    reapplyVerification:(email:string)=>Promise<{success:boolean,message:string}>
 
 }
 

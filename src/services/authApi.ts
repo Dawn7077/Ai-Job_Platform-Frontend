@@ -34,6 +34,10 @@ export const authApi = {
     googleLogin:async(data:{token:string;role:'CANDIDATE'|'COMPANY'|'ADMIN'})=>{
         const response = await api.post('/user/google-login',data)
         return response.data
+    },
+    reapplyVerification:async(email:string):Promise<{success:boolean,message:string}>=>{
+        const response = await api.post('/user/company/reapply-verification',{email})
+        return response.data
     }
 
 }

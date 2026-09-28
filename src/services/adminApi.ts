@@ -42,7 +42,7 @@ export const adminApi = {
         const response = await api.get('/admin/pending-companies')
         return response.data
     },
-    verifyCompany:async(data:{userId:string,status:'ACTIVE'|'SUSPENDED'}):Promise<{success:boolean;message:string}>=>{
+    verifyCompany:async(data:{userId:string,status:'ACTIVE'|'SUSPENDED',reason?:string}):Promise<{success:boolean;message:string}>=>{
         const response = await api.post('/admin/verify-company',data)
         return response.data
     },

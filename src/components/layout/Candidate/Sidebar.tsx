@@ -6,11 +6,13 @@ import {
     ChevronLeft
     } from "lucide-react"
 import { useAuth } from "../../../hooks/useAuth"
-import { NavLink } from "react-router-dom"
+import { NavLink, useNavigate } from "react-router-dom"
 import { useState } from "react"
 
 export const Sidebar =()=> {
     const [isSideBarOpen,setSideBarOpen] = useState(true) 
+    
+    
     
     const mainNav =[
         {name:'DashBoard',path:'/candidate/home',icon: LayoutDashboard},
@@ -18,17 +20,21 @@ export const Sidebar =()=> {
         {name:'Resume Studio',path:'/candidate/resume',icon: FileText},
         {name:'Find Job',path:'/candidate/jobs',icon: Briefcase},
         {name:'Application',path:'/candidate/applications',icon: Send},
-        {name:'Auto Apply',path:'/candidate/auto-apply',icon: Zap},
-        {name:'Interviews',path:'/candidate/onboarding',icon: Video},
-        // {name:'Interviews',path:'/candidate/interviews',icon: Video},
+        {name:'Auto Apply',path:'/candidate/auto-apply',icon: Zap}, 
+        {name:'Interviews',path:'/candidate/interviews',icon: Video},
         // {name:'Mock Interviews',path:'/candidate/mock-interviews',icon: Code2},
         {name:'Mock Interviews',path:'/candidate/getProfile',icon: Code2},
         // {name:'',path:'/candidate/interviews',icon: Video},
     ]
- 
-    const {user} =useAuth()
-
-
+    
+    const {user,logout} =useAuth()
+    const navigate = useNavigate()
+    
+    const handleLogout = async()=>{
+        await logout()
+        navigate('/login')
+    }
+    
     return(
          <aside className={`bg-[#0B101D] border-r border-slate-800/60 flex flex-col justify-between p-4  shrink-0
             ${isSideBarOpen?'w-20':'w-64'} transition-all duration-300 relative
@@ -118,12 +124,10 @@ export const Sidebar =()=> {
                     {!isSideBarOpen && <span>Settings</span>}
                 </button>
                 <button
-                title={isSideBarOpen?'Logout':undefined}
-                className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 ${isSideBarOpen?'justify-center':''}`}>
-                    <LogOut className="w-4 h-4" />
-                    {!isSideBarOpen && 
-                        <span>Logout</span>
-                    }
+                    onClick={handleLogout}
+                    title={isSideBarOpen?'Logout':undefined}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 ${isSideBarOpen?'justify-center':''}`}>
+                        <LogOut className="w-4 h-4" />{!isSideBarOpen && <span>Logout</span>}
                 </button>
             </div>
          </aside>

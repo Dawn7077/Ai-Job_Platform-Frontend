@@ -1,9 +1,9 @@
 import { Navigate, Outlet } from "react-router-dom"
 import { useAuth } from "../../../hooks/useAuth" 
 
-
+type Role = 'CANDIDATE'|'COMPANY'|"ADMIN"
 interface ProtectedRouteProp{
-    allowedRole?:'CANDIDATE'|'COMPANY'|"ADMIN"
+    allowedRole?:Role | Role[]
 }
 
 export const ProtectedRoute = ({allowedRole}:ProtectedRouteProp)=>{
@@ -28,16 +28,20 @@ export const ProtectedRoute = ({allowedRole}:ProtectedRouteProp)=>{
         return <Navigate to='/login' replace/>
     }
 
-    if(allowedRole && user.role !== allowedRole){
-        switch (user.role){
-            case 'CANDIDATE':
-                return <Navigate to={user.isOnboarding ? '/candidate/home':'/candidate/isonboarding'} replace />
-            case 'COMPANY':
-                return <Navigate to='/company/home'replace />
-            case 'ADMIN':
-                return <Navigate to='/admin/home' replace/>
-            default:
-                return <Navigate to='/'/>
+    // if(allowedRole && user.role !== allowedRole){
+    if(allowedRole ){
+        const roles = Array.isArray(allowedRole)? allowedRole:[allowedRole]
+        if(!roles.includes(user.role)){
+            switch (user.role){
+                case 'CANDIDATE':
+                    return <Navigate to={user.isOnboarding ? '/candidate/home':'/candidate/isonboarding'} replace />
+                case 'COMPANY':
+                    return <Navigate to='/company/home'replace />
+                case 'ADMIN':
+                    return <Navigate to='/admin/home' replace/>
+                default:
+                    return <Navigate to='/'/>
+            }
         }
     }
 

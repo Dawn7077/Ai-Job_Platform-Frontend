@@ -110,9 +110,17 @@ export const AuthProvider:React.FC<{children:React.ReactNode}> = ({children})=>{
         throw new Error(res.message || res.error || 'Error in resetting the New Password')
     }
 
+    const reapplyVerification = async(email:string):Promise<{success:boolean,message:string}>=>{
+        const res = await authApi.reapplyVerification(email)
+        if(res.success){
+            return res
+        }
+        throw new Error(res.message || 'Error in reapplying verification for company account')
+    }
+
 
     return(
-    <AuthContext.Provider value ={{user,loading,login,signupOTP,verifySignUp,logout,googleLogin,forgotPassOtpSent,resetPassword}} >
+    <AuthContext.Provider value ={{user,loading,login,signupOTP,verifySignUp,logout,googleLogin,forgotPassOtpSent,resetPassword,reapplyVerification}} >
         {children}
     </AuthContext.Provider>)
 }

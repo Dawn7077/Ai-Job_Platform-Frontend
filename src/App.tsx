@@ -12,10 +12,10 @@ import CandidateDash from './pages/Candidate/CandidateDashBoard'
 import AiMentorChat from './pages/Candidate/AiMentor'
 import ResumeStudio from './pages/Candidate/ResumeStudio'
 
-import {CompanyDash} from './pages/Company/CompanyDashBoard'
+import {CompanyJobs} from './pages/Company/CompanyDashBoard'
 import AdminDash from './pages/Admin/AdminDashBoard' 
 import { AdminLayout } from './components/layout/Admin/AdminLayout'
-import AdminDashBoardVerification from './pages/Admin/AdminHome'
+import AdminDashBoardVerification from './pages/Admin/VerifingCompany'
 import { CompanyLayout } from './components/layout/Company/CompanyLayout'
 import { CandidateJobsPage } from './pages/Candidate/JobPages'
 import { MyApplicationsPage } from './pages/Candidate/ApplicationsPage'
@@ -24,6 +24,14 @@ import { ApplicationDetailsView } from './pages/Candidate/ApplicationDetails'
 import UserManagement from './pages/Admin/UserManagement'
 import CandidateOnboarding from './pages/Candidate/CandidateOnboarding'
 import CandidateProfile from './pages/Candidate/CandidateProfile'
+import CompanyProfile from './pages/Company/Profile'
+import { CompanyApplicationDetails } from './pages/Company/Applications'
+import { CompanyApplicationsList } from './pages/Company/GetApplications'
+import { CandidateInterviewsPage } from './pages/Candidate/GetInterviewsPage'
+import { CompanyInterviewsPage } from './pages/Company/GetInterviews'
+import { InterviewRoomPage } from './pages/Candidate/InterviewPageRoom'
+import { EvaluateInterviewPage } from './pages/Company/EvaluationInteview'
+ 
 
 function App() { 
 
@@ -57,6 +65,7 @@ function App() {
           <Route path='/candidate/applications' element={<MyApplicationsPage/>}/>
           <Route path='/candidate/applications/:id' element={<ApplicationDetailsView/>}/>
           <Route path='/candidate/getProfile' element={<CandidateProfile/>}/>
+          <Route path='/candidate/interviews' element={<CandidateInterviewsPage/>}/>
         </Route>
       </Route>  
 
@@ -65,9 +74,17 @@ function App() {
       {/* Company routes */}
       <Route element={<ProtectedRoute allowedRole='COMPANY'/>}>
         <Route element={<CompanyLayout/>}>
-          <Route path='/company/home' element={<CompanyDash/>}/>
-          <Route path='/company/dashboard' element={<CompanyDash/>}/>
-          <Route path='/company/jobs' element={<CompanyDash/>}/>
+          <Route path='/company/home' element={<CompanyJobs/>}/>
+          <Route path='/company/dashboard' element={<CompanyJobs/>}/>
+          <Route path='/company/profile' element={<CompanyProfile/>}/>
+          <Route path='/company/jobs' element={<CompanyJobs/>}/>
+
+          <Route path='/company/applications/:id/:jobId' element={<CompanyApplicationDetails/>}/>
+          <Route path='/company/applications' element={<CompanyApplicationsList/>}/>
+          <Route path='/company/jobs/:jobId/applications' element={<CompanyApplicationsList/>}/>
+          <Route path='/company/interviews' element={<CompanyInterviewsPage/>}/>
+          <Route path='/company/interviews/:interviewId/evaluate' element={<EvaluateInterviewPage/>}/>
+
         </Route>
       </Route>  
 
@@ -80,7 +97,11 @@ function App() {
           <Route path='/admin/users' element={<UserManagement/>}/>
         </Route>
       </Route>  
-      
+
+      {/* Interview Page */}
+      <Route element={<ProtectedRoute allowedRole={['CANDIDATE','COMPANY']}/>}>
+        <Route path='/room/:roomKey' element={<InterviewRoomPage/>}/>
+      </Route>
 
     </Routes>
    </>

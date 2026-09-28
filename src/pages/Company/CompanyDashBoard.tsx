@@ -11,7 +11,7 @@ import { useCompany } from "../../hooks/useCompanyHook";
 
 type ViewMode = "LIST" | "CREATE";
 
-export const CompanyDash: React.FC = () => {
+export const CompanyJobs: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("LIST");
   const { jobs,totalJobs, fetchJobs, createJob, loading, error } = useCompany();
   const {logout} = useAuth()
@@ -196,6 +196,17 @@ export const CompanyDash: React.FC = () => {
                       </span>
                     ))}
                   </div>
+
+                  <div className="mt-4 pt-3 border-t border-slate-200/40 flex justify-between items-center">
+                    <span className="text-[11px] text-slate-400">ID: {job.id}</span>
+                    <Link
+                      to={`/company/jobs/${job.id}/applications`}
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg"
+                    >
+                      View Applications &rarr;
+                  </Link>
+                </div>
+
                 </div>
               ))}
             </div>

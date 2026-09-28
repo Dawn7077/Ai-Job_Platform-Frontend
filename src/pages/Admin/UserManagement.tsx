@@ -71,6 +71,11 @@ export default function UserManagement() {
   };
 
   const handleStatusChange = async (userId: string, currentStatus: string) => {
+    const confirm = window.confirm(
+      `Are you sure you want to change the status of this user to ${currentStatus}`
+    )
+    if(!confirm)return
+
     const newStatus = currentStatus === "ACTIVE" ? "SUSPENDED" : "ACTIVE";
     const res = await udpateUserStatus(userId, newStatus);
     if (res?.success) {

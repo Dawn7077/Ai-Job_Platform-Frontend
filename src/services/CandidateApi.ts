@@ -39,6 +39,10 @@ export const CandidateApi ={
     getProfile:async():Promise<{success:boolean,data:CandidateProfilePayload}>=>{
         const response = await api.get('/candidate/profile')
         return response.data
-    }
+    },
+    getAllInterviews:async()=>{
+        const response = await api.get('/candidate/interviews')
+        return response.data
+    },
 
 }

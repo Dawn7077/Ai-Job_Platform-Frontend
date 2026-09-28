@@ -4,6 +4,7 @@ import { useNavigate,Link} from "react-router-dom"
 import { User,Building,ShieldCheck ,Eye,EyeOff} from "lucide-react"
 import { getErrorMessage } from "../../utils/ErrorMessage"
 import { useGoogleLogin,TokenResponse } from "@react-oauth/google"
+import { AxiosError } from "axios"
 type userRole = 'CANDIDATE'|'COMPANY'|'ADMIN'
 
 export default function Login(){
@@ -12,12 +13,12 @@ export default function Login(){
   const [password,setPassword] = useState('')
   const [showPassword,setShowPassword] = useState(false)
   const [error,setError] = useState('')
+  const [verify,setVerify] = useState(false) 
 
-  // const [succesMsg,setSuccesMsg] = useState('')
   
   const [loading,setLoading] = useState(false)
 
-  const {login,googleLogin} = useAuth()
+  const {login,googleLogin,reapplyVerification} = useAuth()
   const navigate = useNavigate()
 
    const validationForm =()=>{
@@ -36,6 +37,7 @@ export default function Login(){
     e.preventDefault()
     setError('')
     setLoading(true)
+    setVerify(false)
 
     const validationError = validationForm()
     if(validationError){
@@ -47,22 +49,17 @@ export default function Login(){
 
     try {
       const {user,isOnboarding} = await login({email,password})
-
-      // company verification
-      // if("message" in user && user.message){
-      //   const msg = user?.message ||''
-      //   setSuccesMsg(msg)
-      //   setLoading(false)
-      //   return
-      // }
       
-            console.log('isOnboarding=>',isOnboarding,'\nuser',user.email)
+      console.log('isOnboarding=>',isOnboarding,'\nuser',user.email)
 
       if(role && role !== user.role){
         setError(`This account is registered as ${user.role}, not ${role}.`)
         setLoading(false)
         return
       }
+
+       
+
       switch (user.role){
         case 'CANDIDATE':
           if(!isOnboarding){
@@ -81,8 +78,13 @@ export default function Login(){
 
    
       } catch (error) {
-      
-      setError(getErrorMessage(error))
+        console.log('ERROR TESTING===>')
+        const message = getErrorMessage(error)
+        setError(message)
+        const err = error instanceof Error?error:undefined
+        if(role ==='COMPANY' && (err.message.includes('suspended')||message.includes('suspended') || message.includes('pending') )){
+          setVerify(true) 
+        }
     }finally{
       setLoading(false)
     }
@@ -123,6 +125,22 @@ export default function Login(){
     onSuccess:handleGoogleSuccess,
     onError:()=>setError('Google Sign-In error.Please try again')
   })
+
+  const handleReapply = async()=>{
+    try {
+      setLoading(true) 
+      const res = await reapplyVerification(email)
+      if(res.success){
+        alert(`${res.message}: please try again after successful verification`)
+        setVerify(false)
+        setError('')
+      }
+    } catch (err)  {
+      setError(getErrorMessage(err))
+    }finally{
+      setLoading(false)
+    }
+  }
 
   
 
@@ -261,6 +279,18 @@ export default function Login(){
             </svg>
           </button>
 
+          {verify && (
+            <button
+            type="button"
+            onClick={()=>handleReapply()}
+            disabled={loading}
+            className="w-full py-3 px-4 rounded-xl font-medium text-sm text-slate-200 bg-[#161C2E] border border-slate-800/60 hover:bg-[#1E2638] flex items-center justify-center gap-3 transition-all"
+            >
+            Reapply verification
+          </button>
+          )}
+
+
 {/* sign up */}
           <div className="text-center text-xs text-slate-400 mt-2">
             <span>New to CareerAi ?</span>
@@ -268,6 +298,8 @@ export default function Login(){
               Create an account
             </Link>
           </div>
+
+
 
         </form>
 

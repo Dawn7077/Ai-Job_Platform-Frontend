@@ -1,13 +1,14 @@
 import { useCallback, useState } from "react"
 import { CandidateApi } from "../services/CandidateApi"
 import { getErrorMessage } from "../utils/ErrorMessage"
-import { Application, ApplicationDetailResult, CandidateProfilePayload, ChatResponseData, Job } from "../types/candidate"
+import { Application, ApplicationDetailResult, CandidateProfilePayload, ChatResponseData, Interview, Job } from "../types/candidate"
 
 
 export const useCandidate = ()=>{
     
     const [error,setError] = useState<string|null>(null)
     const [loading,setLoading] = useState(false)
+    const [allInterview,setAllInterview] = useState<Interview[]>([])
 
 
     const askMentor = async(userId:string,message:string):Promise<{success: boolean;data:ChatResponseData;}|null>=>{
@@ -118,11 +119,29 @@ export const useCandidate = ()=>{
             setLoading(false)
         }
     },[])
+
+    const fetchInterviews= useCallback(async()=>{
+        setLoading(true)
+        setError(null)
+        try {
+            const response = await CandidateApi.getAllInterviews()
+            if(response.success){
+                setAllInterview(response.interviews)
+            }
+            return response
+        } catch (error) {
+                setError(getErrorMessage(error))
+        }
+        finally{
+            setLoading(false)
+        }
+    },[])
     
     return{
-        error,loading,
+        error,loading,allInterview,
         askMentor,fetchJobs,applyJob,
         fetchMyApplications,fetchApplicationById,
         FetchJobDetails,fetchProfile,saveProfile,
+        fetchInterviews,
     }
 }

@@ -10,8 +10,17 @@ export default function AdminDashBoardVerification(){
         .catch(()=>{})
     },[])
     const handleverify = async(userId:string,status:"ACTIVE"|"SUSPENDED")=>{
+        let reason: string|undefined = undefined
+
+        if(status==='SUSPENDED'){
+            const inputReason = window.prompt('Please enter the reason for rejecting/suspending this company:')
+            if(inputReason === null)return
+
+            reason = inputReason.trim() || 'No specific reason provided.'
+        }
+
         try {
-            await verifyCompany(userId,status)
+            await verifyCompany(userId,status,reason)
             setCompanies(prev=> prev.filter(c=> c.id !== userId))
         } finally{
             console.log('done verifcation of',userId)

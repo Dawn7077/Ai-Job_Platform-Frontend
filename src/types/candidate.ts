@@ -60,6 +60,30 @@ export interface CandidateProfilePayload {
     githubUrl?:string
     linkedinUrl?:string
     skills:string[]
+    resumeKey?:string
     experience: ExperienceItem[]
     education:EducationItem[]
+}
+
+export interface Interview{
+    id :string
+    applicationId:string
+    candidateId:string
+    companyId:string
+    roomKey :string
+    scheduledAt:Date
+    status : "SCHEDULED" | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
+    createdAt :Date
+    updatedAt:Date
+}
+
+export interface InterviewEvaluation{
+    id:string      
+    interviewId:string
+    technicalScore:number
+    communicationScore:number 
+    problemSolvingScore:number      
+    notes:string        
+    decision:"HIRED"|"REJECTED"|"NEXT_ROUND"|"PENDING"
+    createdAt?:Date      
 }
