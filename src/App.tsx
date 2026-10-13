@@ -31,6 +31,7 @@ import { CandidateInterviewsPage } from './pages/Candidate/GetInterviewsPage'
 import { CompanyInterviewsPage } from './pages/Company/GetInterviews'
 import { InterviewRoomPage } from './pages/Candidate/InterviewPageRoom'
 import { EvaluateInterviewPage } from './pages/Company/EvaluationInteview'
+import { CodeEditor } from './pages/Candidate/CodeEditor'
  
 
 function App() { 
@@ -40,7 +41,7 @@ function App() {
     <Routes>
       {/* public routes */}
       {/* <Route path='/' element={<h1>Home Page</h1>}/> */}
-      <Route path='/' element={<UserManagement/>}/>
+      <Route path='/' element={<CodeEditor/>}/>
 
       <Route element={<PublicRoute/>}>
         <Route path='/signup' element={<SignUp/>}/>
