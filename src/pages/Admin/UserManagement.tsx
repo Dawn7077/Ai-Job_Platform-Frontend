@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery,useQueryClient } from "@tanstack/react-query";
 import { useAdmin } from "../../hooks/useAdminHook";
 import { User } from "../../services/adminApi";
 import {
@@ -14,12 +15,14 @@ import {
 import { useDebounce } from "../../hooks/useDebounce";
 
 export default function UserManagement() {
-  const { loading, error, fetchUsers, udpateUserRole, udpateUserStatus, deleteUser } =
+  const queryClient = useQueryClient()
+  const { fetchUsers, udpateUserRole, udpateUserStatus, deleteUser } =
     useAdmin();
-  const [users, setUsers] = useState<User[]>([]);
+  // const [users, setUsers] = useState<User[]>([]);
   const [page, setPage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState<number>(1);
-  const [totalUsers, setTotalUsers] = useState<number>(0);
+  // const [serachResults,setSearchRes] = useState<User[]>([])
+  // const [totalPages, setTotalPages] = useState<number>(1);
+  // const [totalUsers, setTotalUsers] = useState<number>(0);
 
   const [search, setSearch] = useState<string>("");
   const [roleFilter, setRole] = useState<string>("");
@@ -30,47 +33,27 @@ export default function UserManagement() {
 
   const debouncedSearch = useDebounce(search,400)
 
-  useEffect(() => {
-    let isCancelled = false;
-
-    const executeFetch = async () => {
-      const res = await fetchUsers({
+  const {data ,isLoading,isFetching,error,refetch} = useQuery({
+    queryKey:['users',{page,search:debouncedSearch,role:roleFilter,status:statusFilter}],
+    queryFn:()=>{
+      return fetchUsers({
         page,
-        limit: 10,
+        limit:10,
         search:debouncedSearch,
-        role: roleFilter || undefined,
-        status: statusFilter || undefined,
-      });
+        role:roleFilter||undefined,
+        status:statusFilter||undefined
+      })
+    },
+    staleTime:1000 * 60 * 5,
+    gcTime:1000 * 60 * 5,
+  })
 
-      if (!isCancelled && res?.success) {
-        setUsers(res.users);
-        setTotalPages(res.pagination.totalPages);
-        setTotalUsers(res.pagination.total);
-      }
-    };
-    executeFetch();
-    return () => {
-      isCancelled = true;
-    };
-  }, [page, debouncedSearch, roleFilter, statusFilter, fetchUsers]);
+  const users :User[] = data?.users || [];
+  const totalPages = data?.pagination?.totalPages || 1
+  const totalUsers = data?.pagination?.total || 0 
+  const errorMessage = error instanceof Error ? error.message : null 
 
-  const loadUsers = async () => {
-    const res = await fetchUsers({
-      page,
-      limit: 10,
-      search,
-      role: roleFilter || undefined,
-      status: statusFilter || undefined,
-    });
-
-    if (res?.success) {
-      setUsers(res.users);
-      setTotalPages(res.pagination.totalPages);
-      setTotalUsers(res.pagination.total);
-    }
-  };
-
-  const handleStatusChange = async (userId: string, currentStatus: string) => {
+   const handleStatusChange = async (userId: string, currentStatus: string) => {
     const confirm = window.confirm(
       `Are you sure you want to change the status of this user to ${currentStatus}`
     )
@@ -78,21 +61,102 @@ export default function UserManagement() {
 
     const newStatus = currentStatus === "ACTIVE" ? "SUSPENDED" : "ACTIVE";
     const res = await udpateUserStatus(userId, newStatus);
+
     if (res?.success) {
-      loadUsers();
+      queryClient.setQueriesData(
+        ['users',{page,search:debouncedSearch,role:roleFilter,status:statusFilter}],
+        (oldData:any)=>{
+          if(!oldData)return oldData
+          return{
+            ...oldData,
+            users:oldData.users.map((user:User)=>
+            user.id === userId? {...user,status:newStatus} : user)
+          }
+        }
+      )
+
+
+      // // loadUsers();
+      // setUsers(prev=>
+      //   prev.map(user=>user.id===userId?{...user,status:newStatus}:user)
+      // )
     }
   };
 
-  const handleRoleChange = async (
+   const handleRoleChange = async (
     userId: string,
     newRole: "CANDIDATE" | "COMPANY" | "ADMIN"
   ) => {
     console.log("role changeReq to :", newRole);
     const res = await udpateUserRole(userId, newRole);
-    if (res?.success) {
-      loadUsers();
+    if (res?.success) { 
+      queryClient.setQueriesData(
+        ['users', { page, search: debouncedSearch, role: roleFilter, status: statusFilter }],
+        (oldData:any)=>{
+          if(!oldData)return oldData
+          return{
+            ...oldData,
+            users:oldData.users.map((user:User)=>
+            user.id === userId? {...user,role:newRole} : user)
+          }
+        }
+      )
+
+
+
+      // setUsers(prevUsers=>
+      //   prevUsers.map(user=>user.id===userId?{...user,role:newRole}:user)
+      // )
     }
   };
+
+  // useEffect(() => {
+  //   let isCancelled = false;
+  //   console.log("useEffect triggered by:", { page, debouncedSearch, roleFilter, statusFilter });
+
+  //   const executeFetch = async () => {
+  //     console.log("🚨 FETCH USERS API CALLED!");
+  //     const res = await fetchUsers({
+  //       page,
+  //       limit: 10,
+  //       search:debouncedSearch,
+  //       role: roleFilter || undefined,
+  //       status: statusFilter || undefined,
+  //     });
+
+  //     if (!isCancelled && res?.success) {
+  //       setUsers(res.users);
+  //       setTotalPages(res.pagination.totalPages);
+  //       setTotalUsers(res.pagination.total);
+  //     }
+  //   };
+  //   executeFetch();
+  //   return () => {
+  //     isCancelled = true;
+  //   };
+  // }, [page, debouncedSearch, roleFilter, statusFilter, fetchUsers]);
+
+  // const loadUsers = async () => {
+  //   const res = await fetchUsers({
+  //     page,
+  //     limit: 10,
+  //     search,
+  //     role: roleFilter || undefined,
+  //     status: statusFilter || undefined,
+  //   });
+
+  //   if (res?.success) {
+  //     setUsers(res.users);
+  //     setTotalPages(res.pagination.totalPages);
+  //     setTotalUsers(res.pagination.total);
+  //     setSearchRes(res.users)
+  //     handleFrontSearch('')
+  //   }
+  // };
+
+ 
+
+ 
 
   const handleDeleteUser = async (userId: string, userName: string) => {
     const confirmed = window.confirm(
@@ -107,8 +171,8 @@ export default function UserManagement() {
         // If the deleted user was the last user on the current page, go back 1 page if possible
         if (users.length === 1 && page > 1) {
           setPage((prev) => prev - 1);
-        } else {
-          loadUsers();
+        } else { 
+          refetch()
         }
       }
     } catch (err) {
@@ -117,6 +181,16 @@ export default function UserManagement() {
       setDeletingId(null);
     }
   };
+
+  // const handleFrontSearch = async(username:string)=>{
+  //   if(username!==''){
+  //     const result = users.filter(user=>user.name !== username )
+  //     setSearchRes(result)
+  //   }else{
+  //     setSearchRes(users)
+  //   }
+
+  // }
 
   return (
     <div className="p-6 bg-[#0B0F19] min-h-screen text-slate-100">
@@ -128,17 +202,17 @@ export default function UserManagement() {
             <p className="text-xs text-slate-400">Total accounts: {totalUsers}</p>
           </div>
           <button
-            onClick={loadUsers}
-            disabled={loading}
+            onClick={()=>refetch()}
+            disabled={isFetching}
             className="p-2 bg-slate-800 border border-slate-700 rounded-lg hover:bg-slate-700 transition disabled:opacity-50"
           >
-            <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+            <RefreshCw className={`w-4 h-4 ${isFetching ? "animate-spin" : ""}`} />
           </button>
         </div>
 
-        {error && (
+        {errorMessage && (
           <div className="p-3 bg-red-950/50 border border-red-800 text-red-300 text-xs rounded-xl">
-            {error}
+            {errorMessage}
           </div>
         )}
 
@@ -199,7 +273,7 @@ export default function UserManagement() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60">
-              {loading && users.length === 0 ? (
+              {isLoading && users.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="text-center py-8 text-slate-500">
                     Loading users...
@@ -306,14 +380,14 @@ export default function UserManagement() {
             <div className="flex gap-2">
               <button
                 onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                disabled={page === 1 || loading}
+                disabled={page === 1 || isFetching}
                 className="p-1.5 bg-slate-800 border border-slate-700 rounded-lg disabled:opacity-40 hover:bg-slate-700 transition"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={page >= totalPages || loading}
+                disabled={page >= totalPages || isFetching}
                 className="p-1.5 bg-slate-800 border border-slate-700 rounded-lg disabled:opacity-40 hover:bg-slate-700 transition"
               >
                 <ChevronRight className="w-4 h-4" />

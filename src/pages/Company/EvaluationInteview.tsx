@@ -13,7 +13,7 @@ export const EvaluateInterviewPage: React.FC = () => {
     communicationScore: 5,
     problemSolvingScore: 5,
     notes: "",
-    descision: "PASSED", // Matches your API payload key
+    decision: "NEXT_ROUND", // Matches your API payload key
   });
 
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -118,13 +118,14 @@ export const EvaluateInterviewPage: React.FC = () => {
             Hiring Decision
           </label>
           <select
-            value={formData.descision}
-            onChange={(e) => handleScoreChange("descision", e.target.value)}
+            value={formData.decision}
+            onChange={(e) => handleScoreChange("decision", e.target.value)}
             className="w-full border rounded-lg p-2.5 text-sm bg-white focus:ring-2 focus:ring-indigo-500"
           >
-            <option value="PASSED">Pass (Hire / Move to Next Round)</option>
+            <option value="NEXT_ROUND">Next Round</option>
+            <option value="HIRED">Hire</option>
             <option value="REJECTED">Reject</option>
-            <option value="ON_HOLD">On Hold</option>
+            <option value="PENDING">Pending</option>
           </select>
         </div>
 

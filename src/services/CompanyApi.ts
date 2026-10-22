@@ -31,7 +31,7 @@ export interface SubmitEvaluationPayload{
     communicationScore:number,
     problemSolvingScore:number,
     notes?:string,
-    descision:string 
+    decision:'HIRED' | 'REJECTED' | 'NEXT_ROUND' | 'PENDING'
 }
 export interface CompanyProfilePayload{
     id?:string
@@ -45,6 +45,52 @@ export interface CompanyProfilePayload{
     logoUrl?:string
     createdAt?:Date
     updatedAt?:Date
+}
+
+export interface CandidateQueryPayload {
+    search?:string
+    skills?:string
+    page?:number
+    limit?:number
+}
+export interface ExperienceItem{
+    title:string
+    company:string
+    startDate:string
+    endDate?:string 
+    description?:string     
+}
+export interface EducationItem{
+    degree:string 
+    institution:string
+    startYear:string
+    endYear:string     
+}
+
+
+export interface CandidateProfileItem { 
+    userId: string;
+    email: string;
+    firstName:string
+    lastName:string
+    phone?:string
+    headline?:string
+    bio?:string
+    location?:string
+    websiteUrl?:string
+    githubUrl?:string
+    linkedinUrl?:string
+    skills:string[]
+    resumeKey?:string
+    experience: ExperienceItem[]
+    education:EducationItem[]
+}
+
+export interface getAllCandidatePayload {
+    candidates: CandidateProfileItem[],
+    total: number
+    page: number
+    totalPages: number
 }
 
 export const companyApi ={
@@ -97,6 +143,15 @@ export const companyApi ={
     },
     submitEvaluation:async(interviewId:string,payload:SubmitEvaluationPayload)=>{
         const response = await api.post(`/company/interview/${interviewId}/evaluation`,payload)
+        console.log(response)
+        return response.data
+    },
+    getAllCandidates:async(query?:CandidateQueryPayload):Promise<{success:boolean,data:getAllCandidatePayload}> =>{
+        const response = await api.get(`/company/candidates`,{params:query})
+        return response.data
+    },
+    getCandidateDetails:async(candidateId:string):Promise<{success:boolean,data:CandidateProfileItem}> =>{
+        const response = await api.get(`/company/candidates/${candidateId}`)
         console.log(response)
         return response.data
     },

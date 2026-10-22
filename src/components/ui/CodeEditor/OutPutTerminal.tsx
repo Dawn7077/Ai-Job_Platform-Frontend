@@ -26,10 +26,13 @@ export const OutputTerminal:React.FC<OutputTerminalProps> = ({
             const result = await executeCode(language,editorValue)
             const runResult = result.run
 
-            const lines = runResult.output ? runResult.output.split('\n'):['No output generated.']
+            const outputString = runResult.output || 'No output generated.';
+            const lines = outputString.split('\n');
+
             setOutput(lines)
-            setIsError(!runResult.stderr)
-        } catch (error) {
+            // setIsError(!runResult.stderr)
+            setIsError(runResult.code !== 0)
+        } catch (error:any) {
             setIsError( true )
             setOutput([
                 error.response?.data?.message || 

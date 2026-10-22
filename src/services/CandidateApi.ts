@@ -14,7 +14,7 @@ export const CandidateApi ={
         const result = await api.get('/candidate/jobs')
         return result.data
     },
-    applyJob:async(data:{jobId:string, resumeUrl?:string}):Promise<{success:boolean,data:Application}>=>{
+    applyJob:async(data:{jobI:string, resumeUrl?:string}):Promise<{success:boolean,data:Application}>=>{
         const result = await api.post('/application/apply',data)
         return result.data
     },

@@ -6,7 +6,8 @@ import {
     ChevronLeft,
     Code2,
     // FileVideo2,
-    PersonStanding
+    PersonStanding,
+    FileVideo2
     } from "lucide-react"
 import { useAuth } from "../../../hooks/useAuth"
 import { NavLink, useNavigate } from "react-router-dom"
@@ -25,9 +26,9 @@ export const Sidebar =()=> {
         {name:'Application',path:'/candidate/applications',icon: Send},
         {name:'Auto Apply',path:'/candidate/auto-apply',icon: Zap}, 
         {name:'Interviews',path:'/candidate/interviews',icon: Video},
-        // {name:'Mock Interviews',path:'/candidate/mock-interviews',icon: FileVideo2},
-        {name:'Profile',path:'/candidate/getProfile',icon: PersonStanding},
-        {name:'Code Editor',path:'/candidate/interviews',icon: Code2},
+        {name:'Mock Interviews',path:'/candidate/mock-interviews',icon: FileVideo2},
+        {name:'Profile',path:'/candidate/getProfile',icon: PersonStanding}, 
+        {name:'Code Editor',path:'/candidate/code-editor',icon: Code2},
     ]
     
     const {user,logout} =useAuth()

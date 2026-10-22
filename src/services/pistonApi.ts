@@ -1,32 +1,27 @@
 import axios from "axios";
+import { version } from "os";
  
-const JUDGE0_URL ="https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=false&wait=true"
+const BACKEND_URL = "http://localhost:3000/user/run-code";
 
-const JUDGE0_LANGUAGE_IDS: Record<string, number> = {
-  javascript: 63, // JavaScript (Node.js 18.15.0)
-  python: 71,     // Python (3.8.1)
-  java: 62,       // Java (OpenJDK 13.0.1)
-  cpp: 54,        // C++ (GCC 9.2.0)
-};
+// const PISTON_LANGUAGES: Record<string, { language: string; version: string }> = {
+//   javascript: { language: "javascript", version: "18.15.0" },
+//   python: { language: "python", version: "3.10.0" },
+//   java: { language: "java", version: "15.0.2" },
+//   cpp: { language: "cpp", version: "10.2.0" },
+// };
 
 export const executeCode =async (
     language:string,
     sourceCode:string
-) =>{
-    const language_id = JUDGE0_LANGUAGE_IDS[language] || 63
+) =>{ 
 
-    const response = await axios.post (
-         JUDGE0_URL ,{
-            sourceCode:sourceCode,
-            language_id:language_id
-        },{
-            headers:{
-                "Content-Type":"application/json",
-                "X-RapidAPI-Key":"",
-                "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
-            }
-        }
-    )
+    const response = await axios.post(BACKEND_URL,{
+        language,
+        sourceCode
+    })
+    console.log('runcode send')
+    if(response)
+        console.log('runcode recieved',response)
 
     return response.data
 }

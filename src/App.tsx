@@ -32,16 +32,23 @@ import { CompanyInterviewsPage } from './pages/Company/GetInterviews'
 import { InterviewRoomPage } from './pages/Candidate/InterviewPageRoom'
 import { EvaluateInterviewPage } from './pages/Company/EvaluationInteview'
 import { CodeEditor } from './pages/Candidate/CodeEditor'
- 
+import { MockInterviewRoom } from './pages/Candidate/MockInterview'
+import { QueryClient,QueryClientProvider } from '@tanstack/react-query'
+import { CompanyCandidatesPage } from './pages/Company/CompanyCandidates'
+import { CompanyCandidateDetails } from './pages/Company/CompanyCandidateDetails'
+
+const queryClient = new QueryClient()
 
 function App() { 
 
   return (
    <>
-    <Routes>
+    <QueryClientProvider client={queryClient}>
+      <Routes>
+
       {/* public routes */}
       {/* <Route path='/' element={<h1>Home Page</h1>}/> */}
-      <Route path='/' element={<CodeEditor/>}/>
+      <Route path='/' element={<CompanyCandidatesPage/>}/>
 
       <Route element={<PublicRoute/>}>
         <Route path='/signup' element={<SignUp/>}/>
@@ -67,6 +74,8 @@ function App() {
           <Route path='/candidate/applications/:id' element={<ApplicationDetailsView/>}/>
           <Route path='/candidate/getProfile' element={<CandidateProfile/>}/>
           <Route path='/candidate/interviews' element={<CandidateInterviewsPage/>}/>
+          <Route path='/candidate/mock-interviews' element={<MockInterviewRoom/>}/>
+          <Route path='/candidate/code-editor' element={<CodeEditor/>}/>
         </Route>
       </Route>  
 
@@ -79,6 +88,8 @@ function App() {
           <Route path='/company/dashboard' element={<CompanyJobs/>}/>
           <Route path='/company/profile' element={<CompanyProfile/>}/>
           <Route path='/company/jobs' element={<CompanyJobs/>}/>
+          <Route path='/company/candidates' element={<CompanyCandidatesPage/>}/>
+          <Route path='/company/candidates/:candidateId' element={<CompanyCandidateDetails/>}/>
 
           <Route path='/company/applications/:id/:jobId' element={<CompanyApplicationDetails/>}/>
           <Route path='/company/applications' element={<CompanyApplicationsList/>}/>
@@ -104,7 +115,9 @@ function App() {
         <Route path='/room/:roomKey' element={<InterviewRoomPage/>}/>
       </Route>
 
-    </Routes>
+
+     </Routes>
+    </QueryClientProvider>
    </>
   )
 }

@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { companyApi, CompanyProfilePayload, CreateJobPayload, JobItem, ScheduleInterviewPayload, SubmitEvaluationPayload } from "../services/CompanyApi";
+import { CandidateProfileItem, CandidateQueryPayload, companyApi, CompanyProfilePayload, CreateJobPayload, JobItem, ScheduleInterviewPayload, SubmitEvaluationPayload } from "../services/CompanyApi";
 import { getErrorMessage } from "../utils/ErrorMessage";
 import { Application, Interview } from "../types/candidate";
 
@@ -13,6 +13,13 @@ export function useCompany(){
     const [currentInterview,setCurrentInterview] = useState<Interview|null>(null)
     const [allInterview,setAllInterview] = useState<Interview[]>([])
     const [companyProfile,setCompanyProfile] = useState<CompanyProfilePayload|null>(null)
+    
+    const [candidates,setCandidates] = useState<CandidateProfileItem[]|[]>([])
+    const [currentCandidate,setCurrentCandidate] = useState<CandidateProfileItem|null>(null)
+    const [totalCandidates,setTotalCandidates] = useState(0)
+    const [candidatePage,setCandidatePage] = useState(1)
+    const [candidateTotalPages,setCandidateTotalPages] = useState(1)
+    
 
     const saveProfile = async(payload:CompanyProfilePayload)=>{
         setLoading(true)
@@ -209,10 +216,50 @@ export function useCompany(){
         }
     }
 
+
+    const fetchAllCandidates = useCallback(async(query?:CandidateQueryPayload)=>{
+        setLoading(true)
+        setError(null)
+        try {
+            const response = await companyApi.getAllCandidates(query)
+            if(response.success){
+                setCandidates(response.data.candidates)
+                setTotalCandidates(response.data.total)
+                setCandidatePage(response.data.page)
+                setCandidateTotalPages(response.data.totalPages)
+            }
+            return response
+        } catch (error) {
+             setError(getErrorMessage(error))
+        }
+        finally{
+           setLoading(false)
+        }
+    },[])
+
+    const fetchCandidateDetails = useCallback(async(candidateId:string)=>{
+        setLoading(true)
+        setError(null)
+        try {
+            const response = await companyApi.getCandidateDetails(candidateId)
+            if(response.success){
+                setCurrentCandidate(response.data)
+            }
+            return response
+        } catch (error) {
+             setError(getErrorMessage(error))
+        }
+        finally{
+           setLoading(false)
+        }
+    },[])
+
     return {
         loading,error,jobs,totalJobs,
         applications,currentApplication,companyProfile,
-        allInterview,currentInterview,createJob,fetchJobs,
+        candidates,currentCandidate,totalCandidates,candidatePage,
+        candidateTotalPages,allInterview,currentInterview,
+        createJob,fetchJobs,fetchAllCandidates,fetchCandidateDetails,
         fetchAllApplications,fetchApplicationsByJobId,
         fetchApplicationById,udpateApplicationStage,
         scheduleInterview,fetchInterviewByRoomKey,

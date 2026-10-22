@@ -1,0 +1,61 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import axios from 'axios';
+
+// API Functions
+const fetchProfile = async () => {
+  const res = await axios.get('/candidate/profile');
+  return res.data;
+};
+
+const updateProfileAPI = async (newProfileData: { name: string }) => {
+  const res = await axios.put('/candidate/profile', newProfileData);
+  return res.data;
+};
+
+export function ProfileManager() {
+  const queryClient = useQueryClient();
+  
+  // 1. Local state to capture updated values from form inputs
+  const [name, setName] = useState('');
+
+  // 2. FETCH: useQuery fetches data and stores it in cache under ['profile']
+  const { data: user, isLoading } = useQuery({
+    queryKey: ['profile'],
+    queryFn: fetchProfile,
+  });
+
+  // 3. UPDATE: useMutation handles sending data to backend
+  const mutation = useMutation({
+    mutationFn: updateProfileAPI,
+    onSuccess: () => {
+      // Clear cache so it instantly refetches the updated data from backend
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      alert('Updated successfully!');
+    },
+  });
+
+  const handleSubmit = () => {
+    // 4. Calling .mutate() passes this object directly into updateProfileAPI()
+    mutation.mutate({ name });
+  };
+
+  if (isLoading) return <div>Loading...</div>;
+
+  return (
+    <div>
+      <p>Current Name: {user?.name}</p>
+      
+      <input 
+        type="text" 
+        value={name} 
+        onChange={(e) => setName(e.target.value)} 
+        placeholder="Enter new name"
+      />
+      
+      <button onClick={handleSubmit} disabled={mutation.isPending}>
+        {mutation.isPending ? 'Saving...' : 'Save Changes'}
+      </button>
+    </div>
+  );
+}

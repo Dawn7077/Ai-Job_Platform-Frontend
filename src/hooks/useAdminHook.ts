@@ -1,5 +1,5 @@
 import {  useCallback, useState } from "react";
-import { adminApi,PendingCompanies, UserFilterParams } from "../services/adminApi";
+import { adminApi,PaginatedUserResponse,PendingCompanies, UserFilterParams } from "../services/adminApi";
 import { getErrorMessage } from "../utils/ErrorMessage";
 
 export const useAdmin = ()=>{
@@ -35,7 +35,7 @@ export const useAdmin = ()=>{
         }
     }
 
-    const fetchUsers = useCallback(async(params:UserFilterParams)=>{
+    const fetchUsers = useCallback(async(params:UserFilterParams):Promise<PaginatedUserResponse | undefined>=>{
         setError(null)
         setLoading(true)
         try {
