@@ -30,7 +30,7 @@ export interface SubmitEvaluationPayload{
     technicalScore:number,
     communicationScore:number,
     problemSolvingScore:number,
-    notes?:string,
+    feedback?:string,
     decision:'HIRED' | 'REJECTED' | 'NEXT_ROUND' | 'PENDING'
 }
 export interface CompanyProfilePayload{

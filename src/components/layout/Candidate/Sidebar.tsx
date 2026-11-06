@@ -27,8 +27,8 @@ export const Sidebar =()=> {
         {name:'Auto Apply',path:'/candidate/auto-apply',icon: Zap}, 
         {name:'Interviews',path:'/candidate/interviews',icon: Video},
         {name:'Mock Interviews',path:'/candidate/mock-interviews',icon: FileVideo2},
-        {name:'Profile',path:'/candidate/getProfile',icon: PersonStanding}, 
         {name:'Code Editor',path:'/candidate/code-editor',icon: Code2},
+        {name:'Profile',path:'/candidate/getProfile',icon: PersonStanding}, 
     ]
     
     const {user,logout} =useAuth()

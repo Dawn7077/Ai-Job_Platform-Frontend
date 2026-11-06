@@ -1,4 +1,4 @@
-import { Application, ApplicationDetailResult, CandidateProfilePayload, ChatResponseData, Job } from "../types/candidate";
+import { Application, ApplicationDetailResult, CandidateProfilePayload, ChatResponseData, ChatSession, Job } from "../types/candidate";
 import { api } from "./api";
 
 
@@ -6,15 +6,23 @@ import { api } from "./api";
 
 
 export const CandidateApi ={
-    askMentor:async(data:{userId:string,message:string}):Promise<{success:boolean;data:ChatResponseData}>=>{
-        const result = await api.post('/candidate/ai-chat',data)
+    askMentor:async(data:{userId:string,message:string,threadId?:string}):Promise<{success:boolean;data:ChatResponseData}>=>{
+        const result = await api.post(`/candidate/ai-chat/${data.threadId}`,data)
+        return result.data
+    },
+    getChatSessions:async(userId:string):Promise<{success:boolean;data:ChatSession[]}>=>{
+        const result = await api.get(`/candidate/chats/${userId}`,)
+        return result.data
+    },
+    getThreadHistory:async(threadId:string):Promise<{success:boolean;data:ChatSession[]}>=>{
+        const result = await api.get(`/candidate/ai-chat/history/${threadId}`,)
         return result.data
     },
     getAllJobs:async():Promise<{success:boolean,data:Job[]}>=>{
         const result = await api.get('/candidate/jobs')
         return result.data
     },
-    applyJob:async(data:{jobI:string, resumeUrl?:string}):Promise<{success:boolean,data:Application}>=>{
+    applyJob:async(data:{jobId:string, resumeUrl?:string}):Promise<{success:boolean,data:Application}>=>{
         const result = await api.post('/application/apply',data)
         return result.data
     },

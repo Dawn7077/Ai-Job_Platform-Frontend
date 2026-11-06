@@ -48,7 +48,7 @@ function App() {
 
       {/* public routes */}
       {/* <Route path='/' element={<h1>Home Page</h1>}/> */}
-      <Route path='/' element={<CompanyCandidatesPage/>}/>
+      <Route path='/' element={<CompanyCandidateDetails/>}/>
 
       <Route element={<PublicRoute/>}>
         <Route path='/signup' element={<SignUp/>}/>

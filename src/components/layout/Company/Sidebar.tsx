@@ -32,7 +32,7 @@ export const CompanySidebar: React.FC = () => {
         { label: 'Dashboard', icon: LayoutDashboard, path: '/company/dashboard' },
         { label: 'Jobs', icon: Briefcase, path: '/company/jobs' },
         { label: 'Candidates', icon: Users, path: '/company/candidates' },
-        { label: 'Candidate Search', icon: Search, path: '/company/search' },
+        // { label: 'Candidate Search', icon: Search, path: '/company/search' },
         { label: 'Applications', icon: FileText, path: '/company/applications' },
         { label: 'Interviews', icon: Video, path: '/company/interviews' },
         { label: 'Assessments', icon: ClipboardCheck, path: '/company/assessments' },

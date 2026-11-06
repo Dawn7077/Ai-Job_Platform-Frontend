@@ -12,7 +12,7 @@ export const EvaluateInterviewPage: React.FC = () => {
     technicalScore: 5,
     communicationScore: 5,
     problemSolvingScore: 5,
-    notes: "",
+    feedback: "",
     decision: "NEXT_ROUND", // Matches your API payload key
   });
 
@@ -136,9 +136,9 @@ export const EvaluateInterviewPage: React.FC = () => {
           </label>
           <textarea
             rows={4}
-            value={formData.notes}
-            onChange={(e) => handleScoreChange("notes", e.target.value)}
-            placeholder="Detailed notes regarding the candidate performance..."
+            value={formData.feedback}
+            onChange={(e) => handleScoreChange("feedback", e.target.value)}
+            placeholder="Detailed feedback regarding the candidate performance..."
             className="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500"
           />
         </div>

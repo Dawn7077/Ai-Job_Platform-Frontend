@@ -78,7 +78,7 @@ export const OutputTerminal:React.FC<OutputTerminalProps> = ({
             </div>
 
             {/* Output stream panel */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-1">
+            <div className="flex-1 p-4 overflow-y-auto space-y-1 ">
                 {!output && !isLoading &&(
                     <div className="text-gray-600 italic">
                         Click "Run Code" to compile and see standard output...
@@ -93,8 +93,8 @@ export const OutputTerminal:React.FC<OutputTerminalProps> = ({
                 )}
 
                 {output &&(
-                    <div className="space-y-1"> 
-                        <div className="flex items-center space-x-1.5 mb-2">
+                    <div className="space-y-1 text-left"> 
+                        <div className="flex items-center space-x-1.5 mb-2 ">
                             {isError ?
                                 (
                                     <div className="flex items-center space-x-1 text-red-400 text-[11px] font-sans">

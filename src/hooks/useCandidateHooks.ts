@@ -1,147 +1,202 @@
-import { useCallback, useState } from "react"
-import { CandidateApi } from "../services/CandidateApi"
-import { getErrorMessage } from "../utils/ErrorMessage"
-import { Application, ApplicationDetailResult, CandidateProfilePayload, ChatResponseData, Interview, Job } from "../types/candidate"
+import { useCallback, useState } from "react";
+import { CandidateApi } from "../services/CandidateApi";
+import { getErrorMessage } from "../utils/ErrorMessage";
+import {
+  Application,
+  ApplicationDetailResult,
+  CandidateProfilePayload,
+  ChatResponseData,
+  ChatSession,
+  Interview,
+  Job,
+} from "../types/candidate";
 
+export const useCandidate = () => {
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [allInterview, setAllInterview] = useState<Interview[]>([]);
+  const [chatSessions, setChatSession] = useState<ChatSession[]>([]);
 
-export const useCandidate = ()=>{
-    
-    const [error,setError] = useState<string|null>(null)
-    const [loading,setLoading] = useState(false)
-    const [allInterview,setAllInterview] = useState<Interview[]>([])
-
-
-    const askMentor = async(userId:string,message:string):Promise<{success: boolean;data:ChatResponseData;}|null>=>{
-        setError(null)
-        setLoading(true)
-        try {
-            const data = await CandidateApi.askMentor({userId,message})
-            console.log(data)
-            return data
-        } catch (error) {
-            setError(getErrorMessage(error)) 
-            return null
-        }
-        finally{
-            setLoading(false)
-        }
+  const fetchChatSessions = async (userId: string) => {
+    try {
+      const res = await CandidateApi.getChatSessions(userId);
+      if (res.success) {
+        setChatSession(res.data);
+      }
+    } catch (error) {
+      setError(getErrorMessage(error));
     }
+  };
 
-    const fetchJobs = useCallback(async():Promise<Job[]|undefined>=>{
-        setError(null)
-        setLoading(true)
-        try {
-            const response = await CandidateApi.getAllJobs()
-            return response.data
-        } catch (error) {
-            setError(getErrorMessage(error))
-        }finally{
-            setLoading(false)
-        }
-    },[])
-
-    const applyJob = async(jobId:string,resumeUrl?:string)=>{
-        setLoading(true)
-        setError(null)
-        try {
-            const response = await CandidateApi.applyJob({jobId,resumeUrl})
-            return response.data
-        } catch (error) {
-            setError(getErrorMessage(error))
-        }
-        finally{
-            setLoading(false)
-        }
+  const fetchChatHistory = async (threadId: string) => {
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await CandidateApi.getThreadHistory(threadId);
+      if (res.success) {
+        setChatSession(res.data);
+      }
+      return [];
+    } catch (error) {
+      setError(getErrorMessage(error));
+      return [];
+    } finally {
+      setLoading(false);
     }
+  };
 
-    const fetchMyApplications = useCallback(async():Promise<Application[]|undefined>=>{
-        setError(null)
-        setLoading(true)
-        try {
-            const response = await CandidateApi.getApplications()
-            return response.data
-        } catch (error) {
-            setError(getErrorMessage(error))
-        }finally{
-            setLoading(false)
-        }
-    },[])
-
-    const fetchApplicationById = useCallback(async(id:string):Promise<ApplicationDetailResult|undefined>=>{
-        setError(null)
-        setLoading(true)
-        try {
-            const response = await CandidateApi.getApplicationById(id)
-            return response.data
-        } catch (error) {
-            setError(getErrorMessage(error))
-        }finally{
-            setLoading(false)
-        }
-    },[])
-
-    const FetchJobDetails =useCallback(async(id:string):Promise<Job|undefined>=>{
-        setError(null)
-        setLoading(true)
-        try {
-            const response = await CandidateApi.getJobDetailById(id)
-            return response.data
-        } catch (error) {
-            setError(getErrorMessage(error))
-        }finally{
-            setLoading(false)
-        }
-    },[])
-
-    const fetchProfile = useCallback(async():Promise< CandidateProfilePayload| undefined >=>{
-        setError(null)
-        setLoading(true)
-        try {
-            const response = await CandidateApi.getProfile()
-            return response.data
-        } catch (error) {
-            setError(getErrorMessage(error))
-        }finally{
-            setLoading(false)
-        }
-    },[])
-
-    const saveProfile = useCallback(async(payload:CandidateProfilePayload)=>{
-        setError(null)
-        setLoading(true)
-        try {
-            const response = await CandidateApi.saveProfile(payload)
-            return response.data
-        } catch (error) {
-            setError(getErrorMessage(error))
-            throw error
-        }finally{
-            setLoading(false)
-        }
-    },[])
-
-    const fetchInterviews= useCallback(async()=>{
-        setLoading(true)
-        setError(null)
-        try {
-            const response = await CandidateApi.getAllInterviews()
-            if(response.success){
-                setAllInterview(response.interviews)
-            }
-            return response
-        } catch (error) {
-                setError(getErrorMessage(error))
-        }
-        finally{
-            setLoading(false)
-        }
-    },[])
-    
-    return{
-        error,loading,allInterview,
-        askMentor,fetchJobs,applyJob,
-        fetchMyApplications,fetchApplicationById,
-        FetchJobDetails,fetchProfile,saveProfile,
-        fetchInterviews,
+  const askMentor = async (
+    userId: string,
+    message: string,
+    threadId?: string,
+  ): Promise<{ success: boolean; data: ChatResponseData } | null> => {
+    setError(null);
+    setLoading(true);
+    try {
+      const data = await CandidateApi.askMentor({ userId, message, threadId });
+      console.log(data);
+      return data;
+    } catch (error) {
+      setError(getErrorMessage(error));
+      return null;
+    } finally {
+      setLoading(false);
     }
-}
+  };
+
+  const fetchJobs = useCallback(async (): Promise<Job[] | undefined> => {
+    setError(null);
+    setLoading(true);
+    try {
+      const response = await CandidateApi.getAllJobs();
+      return response.data;
+    } catch (error) {
+      setError(getErrorMessage(error));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const applyJob = async (jobId: string, resumeUrl?: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await CandidateApi.applyJob({ jobId, resumeUrl });
+      return response.data;
+    } catch (error) {
+      setError(getErrorMessage(error));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchMyApplications = useCallback(async (): Promise<
+    Application[] | undefined
+  > => {
+    setError(null);
+    setLoading(true);
+    try {
+      const response = await CandidateApi.getApplications();
+      return response.data;
+    } catch (error) {
+      setError(getErrorMessage(error));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const fetchApplicationById = useCallback(
+    async (id: string): Promise<ApplicationDetailResult | undefined> => {
+      setError(null);
+      setLoading(true);
+      try {
+        const response = await CandidateApi.getApplicationById(id);
+        return response.data;
+      } catch (error) {
+        setError(getErrorMessage(error));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
+
+  const FetchJobDetails = useCallback(
+    async (id: string): Promise<Job | undefined> => {
+      setError(null);
+      setLoading(true);
+      try {
+        const response = await CandidateApi.getJobDetailById(id);
+        return response.data;
+      } catch (error) {
+        setError(getErrorMessage(error));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
+
+  const fetchProfile = useCallback(async (): Promise<
+    CandidateProfilePayload | undefined
+  > => {
+    setError(null);
+    setLoading(true);
+    try {
+      const response = await CandidateApi.getProfile();
+      return response.data;
+    } catch (error) {
+      setError(getErrorMessage(error));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const saveProfile = useCallback(async (payload: CandidateProfilePayload) => {
+    setError(null);
+    setLoading(true);
+    try {
+      const response = await CandidateApi.saveProfile(payload);
+      return response.data;
+    } catch (error) {
+      setError(getErrorMessage(error));
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const fetchInterviews = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await CandidateApi.getAllInterviews();
+      if (response.success) {
+        setAllInterview(response.interviews);
+      }
+      return response;
+    } catch (error) {
+      setError(getErrorMessage(error));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return {
+    error,
+    loading,
+    allInterview,
+    chatSessions,
+    fetchChatSessions,
+    fetchChatHistory,
+    askMentor,
+    fetchJobs,
+    applyJob,
+    fetchMyApplications,
+    fetchApplicationById,
+    FetchJobDetails,
+    fetchProfile,
+    saveProfile,
+    fetchInterviews,
+  };
+};

@@ -16,6 +16,7 @@ export interface Job{
 export interface ChatResponseData {
     userReq: string;
     intent: string;
+    threadId: string;
     response: string;
 }
 
@@ -86,4 +87,12 @@ export interface InterviewEvaluation{
     notes:string        
     decision:"HIRED"|"REJECTED"|"NEXT_ROUND"|"PENDING"
     createdAt?:Date      
+}
+
+export interface ChatSession {
+    id:string
+    userId:string
+    title:string
+    createdAt:Date
+    updatedAt:Date
 }
